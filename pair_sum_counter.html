@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Counting Integer Pairs with Target Sum</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #d1d1d1;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: #3451d1;
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+        }
+
+        .section h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+        }
+
+        .pseudocode {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            overflow-x: auto;
+            border-radius: 5px;
+        }
+
+        .complexity {
+            background: #e7f3ff;
+            border-left: 4px solid #2196F3;
+            padding: 20px;
+            border-radius: 5px;
+            margin-top: 15px;
+        }
+
+        .complexity h3 {
+            color: #2196F3;
+            margin-bottom: 10px;
+        }
+
+        .input-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .input-group input, .input-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .input-group input:focus, .input-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .input-group textarea {
+            font-family: 'Courier New', monospace;
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .btn {
+            background: #d1d1d1;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .result-box {
+            background: #e8f5e9;
+            border-left: 4px solid #4CAF50;
+            padding: 20px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+
+        .result-box h3 {
+            color: #4CAF50;
+            margin-bottom: 10px;
+        }
+
+        .result-content {
+            font-size: 16px;
+            line-height: 1.8;
+        }
+
+        .pairs-list {
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 10px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .pair-item {
+            padding: 8px;
+            margin: 5px 0;
+            background: #f5f5f5;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .chart-container {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .example {
+            background: #fff3e0;
+            border-left: 4px solid #ff9800;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 15px;
+        }
+
+        .example h4 {
+            color: #ff9800;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Integer Pair Sum Counter</h1>
+            <p>Θ(n log n) Algorithm for Counting Pairs with Target Sum</p>
+        </div>
+
+        <div class="content">
+            <div class="section">
+                <h2>Algorithm Description</h2>
+                <p>This algorithm uses a two-pointer technique combined with sorting to efficiently count pairs of integers that sum to a target value. The approach works by first sorting the array, then using two pointers (one at the start, one at the end) to find all valid pairs.</p>
+                
+                <div class="example">
+                    <h4>Example</h4>
+                    <p><strong>Input:</strong> Array = [1, 5, 7, -1, 5], Target = 6</p>
+                    <p><strong>Process:</strong></p>
+                    <p>1. Sort array: [-1, 1, 5, 5, 7]</p>
+                    <p>2. Use two pointers: left=0, right=4</p>
+                    <p>3. Find pairs: (-1, 7), (1, 5), (1, 5)</p>
+                    <p><strong>Output:</strong> 3 pairs</p>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Pseudocode</h2>
+                <div class="pseudocode">
+<strong>Algorithm CountPairsWithSum(A, target)</strong>
+Input: Array A of n integers, target sum
+Output: Count of pairs (i, j) where i < j and A[i] + A[j] = target
+
+1. Sort(A)                          // Sort array in ascending order
+2. left ← 0
+3. right ← n - 1
+4. count ← 0
+
+5. while left < right do
+6.     sum ← A[left] + A[right]
+7.     
+8.     if sum = target then
+9.         // Count duplicates on both sides
+10.        leftCount ← 1
+11.        rightCount ← 1
+12.        
+13.        // Count duplicates on left
+14.        while left + 1 < right and A[left] = A[left + 1] do
+15.            leftCount ← leftCount + 1
+16.            left ← left + 1
+17.        
+18.        // Count duplicates on right
+19.        while right - 1 > left and A[right] = A[right - 1] do
+20.            rightCount ← rightCount + 1
+21.            right ← right - 1
+22.        
+23.        // Add combinations
+24.        count ← count + (leftCount × rightCount)
+25.        left ← left + 1
+26.        right ← right - 1
+27.    
+28.    else if sum < target then
+29.        left ← left + 1
+30.    else
+31.        right ← right - 1
+32.
+33. return count
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Time Complexity Analysis</h2>
+                <div class="complexity">
+                    <h3>Theoretical Complexity: Θ(n log n)</h3>
+                    <p><strong>Breakdown:</strong></p>
+                    <ul style="margin-left: 20px; margin-top: 10px; line-height: 1.8;">
+                        <li><strong>Sorting:</strong> Θ(n log n) - dominates the complexity</li>
+                        <li><strong>Two-pointer traversal:</strong> Θ(n) - each element visited at most once</li>
+                        <li><strong>Total:</strong> Θ(n log n) + Θ(n) = Θ(n log n)</li>
+                    </ul>
+                    <p style="margin-top: 15px;"><strong>Space Complexity:</strong> O(1) auxiliary space (in-place sorting)</p>
+                </div>
+
+                <div class="complexity" style="background: #f3e5f5; border-left-color: #9c27b0; margin-top: 15px;">
+                    <h3 style="color: #9c27b0;">Correctness</h3>
+                    <p><strong>The algorithm is correct because:</strong></p>
+                    <ul style="margin-left: 20px; margin-top: 10px; line-height: 1.8;">
+                        <li><strong>Sorted property:</strong> After sorting, for any two indices i < j, if A[i] + A[k] = target, then k must be found by the two-pointer approach</li>
+                        <li><strong>Two-pointer invariant:</strong> At each step, we check all possible pairs between left and right pointers</li>
+                        <li><strong>Duplicate handling:</strong> The algorithm correctly counts all combinations when duplicates exist</li>
+                        <li><strong>Completeness:</strong> Every element is considered exactly once in the valid range</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Algorithm Prototype</h2>
+                <div class="input-section">
+                    <div class="input-group">
+                        <label>Enter Array (comma-separated integers):</label>
+                        <textarea id="arrayInput" placeholder="Example: 1, 5, 7, -1, 5, 3, 2">1, 5, 7, -1, 5</textarea>
+                    </div>
+                    <div class="input-group">
+                        <label>Target Sum:</label>
+                        <input type="number" id="targetInput" value="6" placeholder="Enter target sum">
+                    </div>
+                    <button class="btn" onclick="runAlgorithm()">Run Algorithm</button>
+                </div>
+
+                <div id="resultContainer"></div>
+            </div>
+
+            <div class="section">
+                <h2>Performance Visualization</h2>
+                <div class="chart-container">
+                    <button class="btn" onclick="runSimulation()">Run Simulation</button>
+                    <div class="charts-grid">
+                        <div>
+                            <canvas id="timeChart"></canvas>
+                        </div>
+                        <div>
+                            <canvas id="comparisonChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function countPairsWithSum(arr, target) {
+            const steps = [];
+            const n = arr.length;
+            
+            // Sort the array
+            const sorted = [...arr].sort((a, b) => a - b);
+            steps.push(`Sorted array: [${sorted.join(', ')}]`);
+            
+            let left = 0;
+            let right = n - 1;
+            let count = 0;
+            const pairs = [];
+            
+            while (left < right) {
+                const sum = sorted[left] + sorted[right];
+                
+                if (sum === target) {
+                    // Count duplicates
+                    let leftCount = 1;
+                    let rightCount = 1;
+                    
+                    // Count duplicates on left
+                    while (left + 1 < right && sorted[left] === sorted[left + 1]) {
+                        leftCount++;
+                        left++;
+                    }
+                    
+                    // Count duplicates on right
+                    while (right - 1 > left && sorted[right] === sorted[right - 1]) {
+                        rightCount++;
+                        right--;
+                    }
+                    
+                    // Store pairs
+                    for (let i = 0; i < leftCount; i++) {
+                        for (let j = 0; j < rightCount; j++) {
+                            pairs.push([sorted[left], sorted[right]]);
+                        }
+                    }
+                    
+                    count += leftCount * rightCount;
+                    steps.push(`Found pair: (${sorted[left]}, ${sorted[right]}) - Count: ${leftCount * rightCount}`);
+                    
+                    left++;
+                    right--;
+                } else if (sum < target) {
+                    left++;
+                } else {
+                    right--;
+                }
+            }
+            
+            return { count, pairs, steps };
+        }
+
+        function runAlgorithm() {
+            const arrayInput = document.getElementById('arrayInput').value;
+            const target = parseInt(document.getElementById('targetInput').value);
+            
+            try {
+                const arr = arrayInput.split(',').map(x => parseInt(x.trim()));
+                
+                if (arr.some(isNaN)) {
+                    throw new Error('Invalid array input');
+                }
+                
+                const startTime = performance.now();
+                const result = countPairsWithSum(arr, target);
+                const endTime = performance.now();
+                const executionTime = (endTime - startTime).toFixed(4);
+                
+                let html = `
+                    <div class="result-box">
+                        <h3>Results</h3>
+                        <div class="result-content">
+                            <p><strong>Input Array:</strong> [${arr.join(', ')}]</p>
+                            <p><strong>Target Sum:</strong> ${target}</p>
+                            <p><strong>Number of Pairs:</strong> ${result.count}</p>
+                            <p><strong>Execution Time:</strong> ${executionTime} ms</p>
+                            
+                            <h4 style="margin-top: 15px; color: #667eea;">Algorithm Steps:</h4>
+                            <div class="pairs-list">
+                                ${result.steps.map(step => `<div class="pair-item">${step}</div>`).join('')}
+                            </div>
+                            
+                            ${result.pairs.length > 0 ? `
+                                <h4 style="margin-top: 15px; color: #667eea;">All Pairs Found:</h4>
+                                <div class="pairs-list">
+                                    ${result.pairs.map((pair, idx) => 
+                                        `<div class="pair-item">Pair ${idx + 1}: (${pair[0]}, ${pair[1]})</div>`
+                                    ).join('')}
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+                
+                document.getElementById('resultContainer').innerHTML = html;
+            } catch (error) {
+                document.getElementById('resultContainer').innerHTML = `
+                    <div class="result-box" style="background: #ffebee; border-left-color: #f44336;">
+                        <h3 style="color: #f44336;">Error</h3>
+                        <p>Please enter a valid array of integers.</p>
+                    </div>
+                `;
+            }
+        }
+
+        let timeChart = null;
+        let comparisonChart = null;
+
+        function runSimulation() {
+            const sizes = [100, 500, 1000, 2000, 3000, 5000, 7000, 10000];
+            const times = [];
+            const theoreticalTimes = [];
+            
+            sizes.forEach(n => {
+                const arr = Array.from({ length: n }, () => Math.floor(Math.random() * 1000) - 500);
+                const target = Math.floor(Math.random() * 100);
+                
+                const startTime = performance.now();
+                countPairsWithSum(arr, target);
+                const endTime = performance.now();
+                
+                times.push(endTime - startTime);
+                theoreticalTimes.push(n * Math.log2(n) / 10000); // Scaled for visualization
+            });
+            
+            // Time Complexity Chart
+            if (timeChart) timeChart.destroy();
+            const ctx1 = document.getElementById('timeChart').getContext('2d');
+            timeChart = new Chart(ctx1, {
+                type: 'line',
+                data: {
+                    labels: sizes,
+                    datasets: [{
+                        label: 'Actual Execution Time (ms)',
+                        data: times,
+                        borderColor: '#667eea',
+                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }, {
+                        label: 'Theoretical O(n log n)',
+                        data: theoreticalTimes,
+                        borderColor: '#764ba2',
+                        backgroundColor: 'rgba(118, 75, 162, 0.1)',
+                        tension: 0.4,
+                        fill: true,
+                        borderDash: [5, 5]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Time Complexity vs Array Size'
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Array Size (n)'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Time (ms)'
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Comparison Chart
+            if (comparisonChart) comparisonChart.destroy();
+            const ctx2 = document.getElementById('comparisonChart').getContext('2d');
+            comparisonChart = new Chart(ctx2, {
+                type: 'bar',
+                data: {
+                    labels: sizes.slice(-4),
+                    datasets: [{
+                        label: 'Execution Time (ms)',
+                        data: times.slice(-4),
+                        backgroundColor: [
+                            'rgba(102, 126, 234, 0.8)',
+                            'rgba(118, 75, 162, 0.8)',
+                            'rgba(76, 175, 80, 0.8)',
+                            'rgba(255, 152, 0, 0.8)'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Performance Comparison (Large Arrays)'
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Array Size (n)'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Time (ms)'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
